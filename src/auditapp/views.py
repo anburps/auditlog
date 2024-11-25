@@ -1,9 +1,10 @@
 # views.py
 from rest_framework import generics, permissions
 from rest_framework.authentication import TokenAuthentication
-from rest_framework_simplejwt.authentication import TokenAuthentication
 from .models import Product
 from .serializers import ProductSerializer
+from rest_framework.permissions import IsAuthenticated
+
 
 class ProductCreateView(generics.CreateAPIView):
     queryset = Product.objects.all()
@@ -21,8 +22,8 @@ class ProductCreateView(generics.CreateAPIView):
 class ProductRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)

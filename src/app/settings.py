@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+Auth_USER_MODEL = 'auditapp.User'
 # Application definition
 
 INSTALLED_APPS = [

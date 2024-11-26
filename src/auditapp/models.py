@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from auditlog.models import AuditlogHistoryField
 from auditlog.registry import auditlog
-from auditlog.models import HistoryField
 
 # Ensure Role is imported if it's defined elsewhere
 # from .models import Role  # Uncomment if Role is in the same app
@@ -43,7 +43,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    history = HistoryField()
+    history = AuditlogHistoryField()
 
 
     def __str__(self):

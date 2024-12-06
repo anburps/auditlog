@@ -34,3 +34,21 @@ class ProductRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
+from django.shortcuts import render, redirect
+from .forms import ProductForm
+@login_required
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user 
+            product.save()
+            return redirect('create_product')  
+    else:
+        form = ProductForm()
+    
+    return render(request, 'home.html', {'form': form})
+
+def login

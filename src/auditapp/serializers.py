@@ -17,11 +17,15 @@ class UserSerializer(serializers.ModelSerializer):
             return user
 
 class ProductSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Product
         fields = [ 'user', 'name', 'price']
+
+        def create(self, validated_data):
+            user = self.context['request'].user  
+            return Product.objects.create(user=user, **validated_data)
+
 
 
 
@@ -36,9 +40,8 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(email=email, password=password)
         if not user:
             raise serializers.ValidationError("Invalid email or password.")
-
         if not user.is_active:
-            raise serializers.ValidationError("User account is disabled.")
+            raise serializers.ValidationError("User account is inactive.")
 
         data['user'] = user
         return data

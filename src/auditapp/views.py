@@ -8,6 +8,21 @@ from .models import *
 from rest_framework.views import APIView
 from django.contrib.auth import login
 
+class RegisterAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()  
+            return Response({
+                'message': 'User registered successfully.',
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email
+                }
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -23,17 +38,18 @@ class LoginAPIView(APIView):
                 'token': token.token,
                 'user': {
                     'id': user.id,
-                    'email': user.email,
                     'username': user.username,
+                    'email': user.email
                 }
             }, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCreateView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [TokenAuthentication,BasicAuthentication]
+    authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):

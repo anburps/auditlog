@@ -2,8 +2,33 @@ from rest_framework import generics, status
 from rest_framework.response import Response  
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication,BasicAuthentication
-from .serializers import ProductSerializer
-from .models import Product
+from .serializers import *
+from .models import *
+
+from rest_framework.views import APIView
+from django.contrib.auth import login
+
+
+class LoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+
+            token, created = Token.objects.get_or_create(user=user)
+
+            login(request, user)
+
+            return Response({
+                'token': token.token,
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'username': user.username,
+                }
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ProductCreateView(generics.CreateAPIView):
     queryset = Product.objects.all()
